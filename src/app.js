@@ -15,7 +15,6 @@ import globalRouter from "./routers/globalRouter";
 import userRouter from "./routers/userRouter";
 import adminRouter from "./routers/adminRouter";
 import apiRouter from "./routers/apiRouter";
-import authRouter from "./routers/authRouter";
 import { localsMiddleware } from "./middlewares";
 import "./passport";
 

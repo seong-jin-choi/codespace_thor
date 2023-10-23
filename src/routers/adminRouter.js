@@ -15,6 +15,12 @@ import {
   adminSample,
   getAdminSampleCrud,
   postAdminSampleCrud,
+  adminProduct,
+  getAdminProduct,
+  postAdminProduct,
+  adminMagazine,
+  getAdminMagazine,
+  postAdminMagazine,
 } from "../controllers/adminController";
 import { onlyAdmin, uploadSampleImg } from "../middlewares";
 
@@ -44,5 +50,15 @@ adminRouter.get(`${routes.adminUser}/delete/:userID`, onlyAdmin, adminUserDelete
 adminRouter.get(routes.adminSample, onlyAdmin, paginate.middleware(20, 50), adminSample);
 adminRouter.get(`${routes.adminSample}/:crudType`, onlyAdmin, getAdminSampleCrud);
 adminRouter.post(`${routes.adminSample}/:crudType`, onlyAdmin, uploadSampleImg, postAdminSampleCrud);
+
+// 상품 데이터 관리
+adminRouter.get(routes.adminProduct, onlyAdmin, paginate.middleware(20, 50), adminProduct);
+adminRouter.get(`${routes.adminProduct}/:crudType`, onlyAdmin, getAdminProduct);
+adminRouter.post(`${routes.adminProduct}/:crudType`, onlyAdmin, uploadSampleImg, postAdminProduct);
+
+// 매거진 데이터 관리
+adminRouter.get(routes.adminMagazine, onlyAdmin, paginate.middleware(20, 50), adminMagazine);
+adminRouter.get(`${routes.adminMagazine}/:crudType`, onlyAdmin, getAdminMagazine);
+adminRouter.post(`${routes.adminMagazine}/:crudType`, onlyAdmin, postAdminMagazine);
 
 export default adminRouter;

@@ -28,6 +28,9 @@ const ADMIN_CHANGE_PW = "/change-pw";
 const ADMIN_USER = "/user";
 // ADMIN SAMPLE(CRUD용)
 const ADMIN_SAMPLE = "/sample";
+// admin 상품 관리
+const ADMIN_PRODUCT = "/product";
+const ADMIN_MAGAZINE = "/magazine";
 
 // API
 const API = "/api";
@@ -63,6 +66,8 @@ const routes = {
   adminUser: ADMIN_USER,
   // ADMIN SAMPLE(CRUD용)
   adminSample: ADMIN_SAMPLE,
+  adminProduct: ADMIN_PRODUCT,
+  adminMagazine: ADMIN_MAGAZINE,
 
   // API
   api: API,

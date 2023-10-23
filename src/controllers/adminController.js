@@ -4,6 +4,8 @@ import moment from "moment-timezone";
 import routes from "../routes";
 import User from "../models/User";
 import Sample from "../models/Sample";
+import AdminProduct from "../models/AdminProduct";
+import AdminMagazine from "../models/AdminMagazine";
 
 // 관리자 로그인
 export const getAdminLogin = (req, res) => {
@@ -426,6 +428,330 @@ export const postAdminSampleCrud = async (req, res) => {
       await Sample.findByIdAndUpdate(itemID, body);
     }
 
+    // 공통
+    res.send(
+      `<script>alert("${adminNameKo}가 ${crudType === "update" ? "수정" : "등록"}되었습니다.");\
+      location.href="${routes.admin}${adminLink}/update?itemID=${adminItem._id}"</script>`
+    );
+  } catch (err) {
+    console.log(err);
+    res.send(
+      `<script>alert("오류가 발생했습니다:\\r\\n${err}");\
+      location.href="${routes.home}"</script>`
+    );
+  }
+};
+
+// 관리자 상품 관리
+export const adminProduct = async (req, res) => {
+  try {
+    const {
+      query: { sort, searchCode, searchValue, limit },
+    } = req;
+
+    // findQuery default 값
+    const findQuery = {};
+    // sortQuery default 값
+    let sortQuery = { createdAt: -1 };
+
+    // BEGIN: 분류 기능이 있을 경우
+    const sortArr = [
+      { code: "0", title: "최근등록순", value: "createdAt", order: -1 },
+      { code: "1", title: "이전등록순", value: "createdAt", order: 1 },
+      { code: "2", title: "최근수정순", value: "updatedAt", order: -1 },
+    ];
+    const sortCode = sort || sortArr[0].code;
+    if (sort) {
+      sortQuery = {};
+      sortArr.forEach((x, i) => {
+        if (x.code === sort) sortQuery[`${sortArr[i].value}`] = sortArr[i].order;
+      });
+    }
+    // END: 분류 기능이 있을 경우
+
+    // BEGIN: 검색 기능이 있을 경우
+    const searchArr = [
+      { code: "0", title: "이름", value: "Name", type: "String" },
+      { code: "1", title: "설명", value: "Description", type: "String" },
+      { code: "2", title: "가격", value: "Price", type: "Number" },
+    ];
+    if (searchCode && searchValue) {
+      for (let i = 0; i < searchArr.length; i += 1) {
+        if (searchArr[i].code === searchCode) {
+          if (searchArr[i].type === "string") {
+            findQuery[searchArr[i].value] = { $regex: searchValue, $options: "i" };
+          } else if (searchArr[i].type === "number") {
+            findQuery[searchArr[i].value] = Number(searchValue);
+          } else if (searchArr[i].type === "objectID") {
+            const userIDs = await User.find({ userID: { $regex: searchValue, $options: "i" } }).distinct("_id");
+            findQuery[searchArr[i].value] = { $in: userIDs };
+          }
+          break;
+        }
+      }
+    }
+    // END: 검색 기능이 있을 경우
+
+    // BEGIN: pagination 데이터
+    const [adminItems, totalCount] = await Promise.all([
+      AdminProduct.find(findQuery).sort(sortQuery).limit(limit).skip(req.skip).exec(),
+      AdminProduct.countDocuments(findQuery),
+    ]);
+    const pageCount = Math.ceil(totalCount / limit);
+    const pages = paginate.getArrayPages(req)(10, pageCount, req.query.page);
+    // END: pagination 데이터
+
+    // BEGIN: 엑셀 다운로드용 전체 데이터
+    const excelData = await AdminProduct.find(findQuery).sort(sortQuery);
+    // END: 엑셀 다운로드용 전체 데이터
+
+    res.render("admin/adminProduct", {
+      adminNameKo: "상품 데이터",
+      adminLink: routes.adminProduct,
+      sortCode,
+      sortArr,
+      limit,
+      searchArr,
+      searchCode,
+      searchValue,
+      adminItems,
+      totalCount,
+      pageCount,
+      pages,
+      excelData,
+    });
+  } catch (err) {
+    console.log(err);
+    res.send(
+      `<script>alert("오류가 발생했습니다:\\r\\n${err}");\
+      location.href="${routes.home}"</script>`
+    );
+  }
+};
+export const getAdminProduct = async (req, res) => {
+  try {
+    const {
+      params: { crudType },
+      query: { itemID },
+    } = req;
+    let adminItem;
+    if (itemID) {
+      adminItem = await AdminProduct.findById(itemID);
+    }
+    const adminNameKo = "상품 데이터";
+    const adminNameEn = "Product";
+    const adminLink = routes[`admin${adminNameEn}`];
+    const updateBool = crudType === "update";
+    const users = await User.find();
+    const renderObj = {
+      crudType,
+      adminNameKo,
+      adminLink,
+      updateBool,
+      adminItem,
+      users,
+    };
+    if (crudType !== "delete") {
+      res.render(`admin/admin${adminNameEn}CRUD`, renderObj);
+    } else {
+      await AdminProduct.findByIdAndDelete(itemID);
+      res.send(`<script>location.href="${routes.admin}${adminLink}"</script>`);
+    }
+  } catch (err) {
+    console.log(err);
+    res.send(
+      `<script>alert("오류가 발생했습니다:\\r\\n${err}");\
+      location.href="${routes.home}"</script>`
+    );
+  }
+};
+export const postAdminProduct = async (req, res) => {
+  try {
+    const {
+      params: { crudType },
+      body,
+      file,
+    } = req;
+
+    const adminNameKo = "상품 데이터";
+    const adminNameEn = "Product";
+    const adminLink = routes[`admin${adminNameEn}`];
+    body.updatedAt = moment(new Date()).tz("Asia/Seoul");
+    let adminItem;
+
+    if (crudType === "create") {
+      // 등록
+      body.thumbnail = file ? file.location : null;
+      body.createdAt = moment(new Date()).tz("Asia/Seoul");
+      adminItem = await AdminProduct.create(body);
+    } else if (crudType === "update") {
+      // 수정
+      const { itemID } = body;
+      adminItem = await AdminProduct.findById(itemID);
+      body.thumbnail = file ? file.location : adminItem.thumbnail;
+      await AdminProduct.findByIdAndUpdate(itemID, body);
+    }
+
+    // 공통
+    res.send(
+      `<script>alert("${adminNameKo}가 ${crudType === "update" ? "수정" : "등록"}되었습니다.");\
+      location.href="${routes.admin}${adminLink}/update?itemID=${adminItem._id}"</script>`
+    );
+  } catch (err) {
+    console.log(err);
+    res.send(
+      `<script>alert("오류가 발생했습니다:\\r\\n${err}");\
+      location.href="${routes.home}"</script>`
+    );
+  }
+};
+
+// 관리자 매거진 관리
+export const adminMagazine = async (req, res) => {
+  try {
+    const {
+      query: { sort, searchCode, searchValue, limit },
+    } = req;
+
+    // findQuery default 값
+    const findQuery = {};
+    // sortQuery default 값
+    let sortQuery = { createdAt: -1 };
+
+    // BEGIN: 분류 기능이 있을 경우
+    const sortArr = [
+      { code: "0", title: "최근등록순", value: "createdAt", order: -1 },
+      { code: "1", title: "이전등록순", value: "createdAt", order: 1 },
+      { code: "2", title: "최근수정순", value: "updatedAt", order: -1 },
+    ];
+    const sortCode = sort || sortArr[0].code;
+    if (sort) {
+      sortQuery = {};
+      sortArr.forEach((x, i) => {
+        if (x.code === sort) sortQuery[`${sortArr[i].value}`] = sortArr[i].order;
+      });
+    }
+    // END: 분류 기능이 있을 경우
+
+    // BEGIN: 검색 기능이 있을 경우
+    const searchArr = [
+      { code: "0", title: "이름", value: "Name", type: "String" },
+      { code: "1", title: "설명", value: "Description", type: "String" },
+      { code: "2", title: "가격", value: "Price", type: "Number" },
+    ];
+    if (searchCode && searchValue) {
+      for (let i = 0; i < searchArr.length; i += 1) {
+        if (searchArr[i].code === searchCode) {
+          if (searchArr[i].type === "string") {
+            findQuery[searchArr[i].value] = { $regex: searchValue, $options: "i" };
+          } else if (searchArr[i].type === "number") {
+            findQuery[searchArr[i].value] = Number(searchValue);
+          } else if (searchArr[i].type === "objectID") {
+            const userIDs = await User.find({ userID: { $regex: searchValue, $options: "i" } }).distinct("_id");
+            findQuery[searchArr[i].value] = { $in: userIDs };
+          }
+          break;
+        }
+      }
+    }
+    // END: 검색 기능이 있을 경우
+
+    // BEGIN: pagination 데이터
+    const [adminItems, totalCount] = await Promise.all([
+      AdminMagazine.find(findQuery).sort(sortQuery).limit(limit).skip(req.skip).exec(),
+      AdminMagazine.countDocuments(findQuery),
+    ]);
+    const pageCount = Math.ceil(totalCount / limit);
+    const pages = paginate.getArrayPages(req)(10, pageCount, req.query.page);
+    // END: pagination 데이터
+
+    // BEGIN: 엑셀 다운로드용 전체 데이터
+    const excelData = await AdminMagazine.find(findQuery).sort(sortQuery);
+    // END: 엑셀 다운로드용 전체 데이터
+
+    res.render("admin/adminMagazine", {
+      adminNameKo: "매거진 데이터",
+      adminLink: routes.adminMagazine,
+      sortCode,
+      sortArr,
+      limit,
+      searchArr,
+      searchCode,
+      searchValue,
+      adminItems,
+      totalCount,
+      pageCount,
+      pages,
+      excelData,
+    });
+  } catch (err) {
+    console.log(err);
+    res.send(
+      `<script>alert("오류가 발생했습니다:\\r\\n${err}");\
+      location.href="${routes.home}"</script>`
+    );
+  }
+};
+export const getAdminMagazine = async (req, res) => {
+  try {
+    const {
+      params: { crudType },
+      query: { itemID },
+    } = req;
+    let adminItem;
+    if (itemID) {
+      adminItem = await AdminMagazine.findById(itemID);
+    }
+    const adminNameKo = "매거진 데이터";
+    const adminNameEn = "Magazine";
+    const adminLink = routes[`admin${adminNameEn}`];
+    const updateBool = crudType === "update";
+    const users = await User.find();
+    const renderObj = {
+      crudType,
+      adminNameKo,
+      adminLink,
+      updateBool,
+      adminItem,
+      users,
+    };
+    if (crudType !== "delete") {
+      res.render(`admin/admin${adminNameEn}CRUD`, renderObj);
+    } else {
+      await AdminMagazine.findByIdAndDelete(itemID);
+      res.send(`<script>location.href="${routes.admin}${adminLink}"</script>`);
+    }
+  } catch (err) {
+    console.log(err);
+    res.send(
+      `<script>alert("오류가 발생했습니다:\\r\\n${err}");\
+      location.href="${routes.home}"</script>`
+    );
+  }
+};
+export const postAdminMagazine = async (req, res) => {
+  try {
+    const {
+      params: { crudType },
+      body,
+    } = req;
+    console.log(req.body);
+    const adminNameKo = "매거진 데이터";
+    const adminNameEn = "Magazine";
+    const adminLink = routes[`admin${adminNameEn}`];
+    body.updatedAt = moment(new Date()).tz("Asia/Seoul");
+    let adminItem;
+
+    if (crudType === "create") {
+      // 등록
+      body.createdAt = moment(new Date()).tz("Asia/Seoul");
+      adminItem = await AdminMagazine.create(body);
+    } else if (crudType === "update") {
+      // 수정
+      const { itemID } = body;
+      adminItem = await AdminMagazine.findById(itemID);
+      await AdminMagazine.findByIdAndUpdate(itemID, body);
+    }
     // 공통
     res.send(
       `<script>alert("${adminNameKo}가 ${crudType === "update" ? "수정" : "등록"}되었습니다.");\
