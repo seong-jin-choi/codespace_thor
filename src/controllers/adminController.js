@@ -735,7 +735,6 @@ export const postAdminMagazine = async (req, res) => {
       params: { crudType },
       body,
     } = req;
-    console.log(req.body);
     const adminNameKo = "매거진 데이터";
     const adminNameEn = "Magazine";
     const adminLink = routes[`admin${adminNameEn}`];
