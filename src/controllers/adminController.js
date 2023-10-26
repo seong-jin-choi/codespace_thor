@@ -4,8 +4,8 @@ import moment from "moment-timezone";
 import routes from "../routes";
 import User from "../models/User";
 import Sample from "../models/Sample";
-import AdminProduct from "../models/AdminProduct";
-import AdminMagazine from "../models/AdminMagazine";
+import Product from "../models/Product";
+import Magazine from "../models/Magazine";
 
 // 관리자 로그인
 export const getAdminLogin = (req, res) => {
@@ -494,15 +494,15 @@ export const adminProduct = async (req, res) => {
 
     // BEGIN: pagination 데이터
     const [adminItems, totalCount] = await Promise.all([
-      AdminProduct.find(findQuery).sort(sortQuery).limit(limit).skip(req.skip).exec(),
-      AdminProduct.countDocuments(findQuery),
+      Product.find(findQuery).sort(sortQuery).limit(limit).skip(req.skip).exec(),
+      Product.countDocuments(findQuery),
     ]);
     const pageCount = Math.ceil(totalCount / limit);
     const pages = paginate.getArrayPages(req)(10, pageCount, req.query.page);
     // END: pagination 데이터
 
     // BEGIN: 엑셀 다운로드용 전체 데이터
-    const excelData = await AdminProduct.find(findQuery).sort(sortQuery);
+    const excelData = await Product.find(findQuery).sort(sortQuery);
     // END: 엑셀 다운로드용 전체 데이터
 
     res.render("admin/adminProduct", {
@@ -536,12 +536,13 @@ export const getAdminProduct = async (req, res) => {
     } = req;
     let adminItem;
     if (itemID) {
-      adminItem = await AdminProduct.findById(itemID);
+      adminItem = await Product.findById(itemID);
     }
     const adminNameKo = "상품 데이터";
     const adminNameEn = "Product";
     const adminLink = routes[`admin${adminNameEn}`];
     const updateBool = crudType === "update";
+    const categories = ["고양이", "개", "원숭이", "사자", "코알라", "기린", "판다", "호랑이", "코끼리", "말"];
     const users = await User.find();
     const renderObj = {
       crudType,
@@ -550,11 +551,12 @@ export const getAdminProduct = async (req, res) => {
       updateBool,
       adminItem,
       users,
+      categories,
     };
     if (crudType !== "delete") {
       res.render(`admin/admin${adminNameEn}CRUD`, renderObj);
     } else {
-      await AdminProduct.findByIdAndDelete(itemID);
+      await Product.findByIdAndDelete(itemID);
       res.send(`<script>location.href="${routes.admin}${adminLink}"</script>`);
     }
   } catch (err) {
@@ -583,13 +585,13 @@ export const postAdminProduct = async (req, res) => {
       // 등록
       body.thumbnail = file ? file.location : null;
       body.createdAt = moment(new Date()).tz("Asia/Seoul");
-      adminItem = await AdminProduct.create(body);
+      adminItem = await Product.create(body);
     } else if (crudType === "update") {
       // 수정
       const { itemID } = body;
-      adminItem = await AdminProduct.findById(itemID);
+      adminItem = await Product.findById(itemID);
       body.thumbnail = file ? file.location : adminItem.thumbnail;
-      await AdminProduct.findByIdAndUpdate(itemID, body);
+      await Product.findByIdAndUpdate(itemID, body);
     }
 
     // 공통
@@ -658,15 +660,15 @@ export const adminMagazine = async (req, res) => {
 
     // BEGIN: pagination 데이터
     const [adminItems, totalCount] = await Promise.all([
-      AdminMagazine.find(findQuery).sort(sortQuery).limit(limit).skip(req.skip).exec(),
-      AdminMagazine.countDocuments(findQuery),
+      Magazine.find(findQuery).sort(sortQuery).limit(limit).skip(req.skip).exec(),
+      Magazine.countDocuments(findQuery),
     ]);
     const pageCount = Math.ceil(totalCount / limit);
     const pages = paginate.getArrayPages(req)(10, pageCount, req.query.page);
     // END: pagination 데이터
 
     // BEGIN: 엑셀 다운로드용 전체 데이터
-    const excelData = await AdminMagazine.find(findQuery).sort(sortQuery);
+    const excelData = await Magazine.find(findQuery).sort(sortQuery);
     // END: 엑셀 다운로드용 전체 데이터
 
     res.render("admin/adminMagazine", {
@@ -700,7 +702,7 @@ export const getAdminMagazine = async (req, res) => {
     } = req;
     let adminItem;
     if (itemID) {
-      adminItem = await AdminMagazine.findById(itemID);
+      adminItem = await Magazine.findById(itemID);
     }
     const adminNameKo = "매거진 데이터";
     const adminNameEn = "Magazine";
@@ -718,7 +720,7 @@ export const getAdminMagazine = async (req, res) => {
     if (crudType !== "delete") {
       res.render(`admin/admin${adminNameEn}CRUD`, renderObj);
     } else {
-      await AdminMagazine.findByIdAndDelete(itemID);
+      await Magazine.findByIdAndDelete(itemID);
       res.send(`<script>location.href="${routes.admin}${adminLink}"</script>`);
     }
   } catch (err) {
@@ -744,12 +746,12 @@ export const postAdminMagazine = async (req, res) => {
     if (crudType === "create") {
       // 등록
       body.createdAt = moment(new Date()).tz("Asia/Seoul");
-      adminItem = await AdminMagazine.create(body);
+      adminItem = await Magazine.create(body);
     } else if (crudType === "update") {
       // 수정
       const { itemID } = body;
-      adminItem = await AdminMagazine.findById(itemID);
-      await AdminMagazine.findByIdAndUpdate(itemID, body);
+      adminItem = await Magazine.findById(itemID);
+      await Magazine.findByIdAndUpdate(itemID, body);
     }
     // 공통
     res.send(

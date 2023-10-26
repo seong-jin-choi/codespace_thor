@@ -8,6 +8,7 @@ import "./homeControl";
 import "./adminSidebarControl";
 import "./adminExcelDownloadControl";
 import "./adminControl";
+import "./adminProductControl";
 
 // ajax sample
 // import $ from "jquery";

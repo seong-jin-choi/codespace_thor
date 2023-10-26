@@ -75,9 +75,12 @@ block content
                                     th.text-center(scope='col' style="width: 80px;") 번호
                                     th.text-center(scope='col' style="width: 100px;") 수정/삭제
                                     th(scope='col' style="width: 100px;") 썸네일
-                                    th(scope='col' style="width: 200px;") 이름
-                                    th(scope='col' style="width: 200px;") 설명
-                                    th(scope='col' style="width: 200px;") 가격
+                                    th(scope='col' style="width: 100px;") 이름
+                                    th(scope='col' style="width: 100px;") 설명
+                                    th(scope='col' style="width: 100px;") 가격
+                                    th(scope='col' style="width: 100px;") 브랜드
+                                    th(scope='col' style="width: 100px;") 카테고리
+                                    th(scope='col' style="width: 100px;") 할인율
                                 tbody
                                   each item, index in adminItems
                                     tr
@@ -92,11 +95,14 @@ block content
                                             i.ti.ti-trash
                                       td(scope='col' style="width: 100px;")
                                         img(src=item.thumbnail width="100%" style="aspect-ratio: 1.6184 / 1;")
-                                      td.ellipsis__td(scope='col' style="width: 200px;")
+                                      td.ellipsis__td(scope='col' style="width: 100px;")
                                         a.td__link(href=`${routes.admin}${adminLink}/detail?itemID=${item._id}`)=item.name
                                           i.ti.ti-external-link
-                                      td.ellipsis__td(scope='col' style="width: 200px;")=item.description
-                                      td.ellipsis__td(scope='col' style="width: 200px;")=item.price
+                                      td.ellipsis__td(scope='col' style="width: 100px;")=item.description
+                                      td.ellipsis__td(scope='col' style="width: 100px;")=item.price
+                                      td.ellipsis__td(scope='col' style="width: 100px;")=item.brand
+                                      td.ellipsis__td(scope='col' style="width: 100px;")=item.category
+                                      td.ellipsis__td(scope='col' style="width: 100px;")=`${item.discountRate}%`
                             //- END: Data table
                       //- END: Basic Tables
                       //- BEGIN: Pagination

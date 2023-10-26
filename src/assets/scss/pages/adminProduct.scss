@@ -1,0 +1,12 @@
+.admin__form-page#admin__product-page {
+  .profile__img-wrap {
+    display: flex;
+  }
+  .form-control#thumbnail-img {
+    display: none;
+  }
+  img.profile__img {
+    max-width: 300px;
+    max-height: 300px;
+  }
+}

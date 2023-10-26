@@ -1,7 +1,7 @@
 import moment from "moment-timezone";
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import routes from "./routes";
 
 const s3 = new S3Client({
@@ -37,6 +37,14 @@ const multerSampleDescImg = multer({
 // 한 개의 input(type="file")일 경우
 export const uploadSampleImg = multerSampleImg.single("thumbnail");
 export const uploadSampleDescImg = multerSampleDescImg.single("sampleDescImg");
+export const deleteSampleImg = async (key) => {
+  const deleteCommand = new DeleteObjectCommand({
+    Bucket: "codespace-bentley",
+    Key: key,
+  });
+  const result = await s3.send(deleteCommand);
+  return result;
+};
 // 여러 input(type="file")일 경우
 // export const uploadSampleImg = multerSampleImg.fields([{ name: "thumbnail1" }, { name: "thumbnail2" }]);
 

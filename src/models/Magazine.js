@@ -4,14 +4,12 @@ const { Schema } = mongoose;
 
 const ProductSchema = new Schema(
   {
-    thumbnail: String,
     name: String,
-    description: String,
-    price: Number,
+    content: String,
   },
   { timestamps: true }
 );
 
-const model = mongoose.model("AdminProduct", ProductSchema);
+const model = mongoose.model("Magazine", ProductSchema);
 
 export default model;

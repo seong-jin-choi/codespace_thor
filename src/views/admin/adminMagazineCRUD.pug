@@ -31,13 +31,13 @@ block content
                                 h5.fw-semibold 데이터 등록 영역
                                 hr.mt-0
                               .mb-2
-                                label.form-label.fw-bold(for='#name') 이름
+                                label.form-label.fw-bold(for='name') 이름
                                 input#name.form-control(type='text' name="name" value=`${updateBool ? adminItem.name : ""}` placeholder="제목을 입력하세요" required)
                               .mb-2
-                                label.form-label.fw-bold(for='#content') 설명
-                                input#content.form-control(type='textarea' name="content" value=`${updateBool ? adminItem.content : ""}` placeholder="본문을 입력하세요" required)
+                                label.form-label.fw-bold(for='content') 설명
+                                textarea#content.form-control(type='text' name="content" value=`${updateBool ? adminItem.content : ""}` placeholder="본문을 입력하세요" required)
                               .row.mt-4
-                                .col-12
+                                .col-12 
                                   a.btn.btn-secondary.waves-effect.waves-light.text-white.me-sm-3(onclick="history.go(-1);") 뒤로가기
                                   button.btn.btn-success.waves-effect.waves-float.waves-light(type="submit")=`${updateBool ? "수정" : "등록"}하기`
                   //- END: Content

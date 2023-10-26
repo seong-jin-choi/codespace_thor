@@ -5,7 +5,7 @@ block content
     main.admin__main
       if crudType === "create" || crudType === "update"
         //- FIXME: 페이지에 맞게 id 수정
-        .admin__form-page#admin__sampleForm-page
+        .admin__form-page#admin__product-page
           .layout-wrapper.layout-content-navbar
             .layout-container
               //- BEGIN: Sidebar menu
@@ -36,22 +36,42 @@ block content
                                 if updateBool
                                   h6.text-success.mb-2.fw-bold.guide__heading 선택하지 않으면 이전 데이터로 유지합니다.&nbsp;
                                     a.text-success(href=adminItem.thumbnail target="_blank") [이전 이미지 보기]
+                                  .profile__img-wrap
+                                    img.profile__img(src=adminItem.thumbnail? adminItem.thumbnail:`${imgPath}/admin/user.png`)
                                   input#thumbnail-img.form-control(type="file" name="thumbnail")
+                                  button#delete__thumnail(tyep="button") 이미지 삭제 버튼
                                 else
+                                  .profile__img-wrap
+                                    img.profile__img(src=`${imgPath}/admin/user.png`)
                                   input#thumbnail-img.form-control(type="file" name="thumbnail" required)
                               .col-12.mt-5
                                 h5.fw-semibold 2. 데이터 등록 영역
                                 hr.mt-0
                               .mb-2
                                 label.form-label.fw-bold(for='#data1') 이름
-                                input#data1.form-control(type='text' name="name" value=`${updateBool ? adminItem.name : ""}` placeholder="데이터1을 입력하세요" required)
+                                input#data1.form-control(type='text' name="name" value=`${updateBool ? adminItem.name : ""}` placeholder="이름을 입력하세요" required)
                               .mb-2
-                                label.form-label.fw-bold(for='#data2') 설명
-                                input#data2.form-control(type='text' name="description" value=`${updateBool ? adminItem.description : ""}` placeholder="데이터2를 입력하세요" required)
+                                label.form-label.fw-bold(for='#data2') 브랜드
+                                input#data2.form-control(type='text' name="brand" value=`${updateBool ? adminItem.brand : ""}` placeholder="이름을 입력하세요" required)
                               .mb-2
-                                label.form-label.fw-bold(for='#data3') 가격
+                                label.form-label.fw-bold(for='#data3') 설명
+                                input#data3.form-control(type='text' name="description" value=`${updateBool ? adminItem.description : ""}` placeholder="설명을 입력하세요" required)
+                              .mb-2
+                                label.form-label.fw-bold(for='#data4') 가격
                                 label.form-label.text-danger.fw-bold &nbsp;&nbsp;[숫자만 입력 가능합니다]
-                                input#data3.form-control(type='number' name="price" value=`${updateBool ? adminItem.price : ""}` placeholder="데이터3을 입력하세요" required)
+                                input#data4.form-control(type='number' name="price" value=`${updateBool ? adminItem.price : ""}` placeholder="가격을 입력하세요" required)
+                              .mb-2
+                                label.form-label.fw-bold(for='#data5') 할인율
+                                label.form-label.text-danger.fw-bold &nbsp;&nbsp;[숫자만 입력 가능합니다]
+                                input#data5.form-control(type='number' name="discountRate" value=`${updateBool ? adminItem.discountRate : ""}` min="1" max="100" placeholder="할인율을 입력하세요"  required )
+                              .mb-2
+                                label.form-label.fw-bold(for='category') 카테고리
+                                select#category.form-select(name="category" multiple required)
+                                  each category in categories
+                                    if updateBool && category === adminItem.category
+                                      option(value=category selected)=category
+                                    else
+                                      option(value=category)=category
                               .row.mt-4
                                 .col-12
                                   a.btn.btn-secondary.waves-effect.waves-light.text-white.me-sm-3(onclick="history.go(-1);") 뒤로가기
