@@ -10,7 +10,7 @@ apiRouter.post("/create/sample-desc-img", uploadSampleDescImg, (req, res) => {
 
 apiRouter.post("/create/profileImg", uploadSampleImg, (req, res) => {
   if (!req.file) return res.sendStatus(400);
-  res.send({ location: req.file.location, key: req.file.key });
+  return res.send({ location: req.file.location, key: req.file.key });
 });
 apiRouter.post("/delete/profileImg", (req, res) => {
   if (!req.body.key) {
