@@ -44,7 +44,7 @@ block content
                                   .profile__img-wrap
                                     img.profile__img(src=`${imgPath}/admin/user.png`)
                                   input#thumbnail-img.form-control(type="file" name="thumbnail" required)
-                                  button#delete__thumnail(tyep="button") 이미지 삭제 버튼
+                                  button#delete__thumnail(tyep="button" style="display:none") 이미지 삭제 버튼
                               .col-12.mt-5
                                 h5.fw-semibold 2. 데이터 등록 영역
                                 hr.mt-0
@@ -56,7 +56,9 @@ block content
                                 input#data2.form-control(type='text' name="brand" value=`${updateBool ? adminItem.brand : ""}` placeholder="이름을 입력하세요" required)
                               .mb-2
                                 label.form-label.fw-bold(for='#data3') 설명
-                                textarea#data3.form-control(type='text' name="description" value=`${updateBool ? adminItem.description : ""}` placeholder="설명을 입력하세요" required)
+                                textarea#data3.form-control(type='text' name="description" placeholder="설명을 입력하세요" required)
+                                  if updateBool
+                                    =adminItem.description
                               .mb-2
                                 label.form-label.fw-bold(for='#data4') 가격
                                 label.form-label.text-danger.fw-bold &nbsp;&nbsp;[숫자만 입력 가능합니다]

@@ -23,9 +23,9 @@ if (adminProductPage) {
           contentType: false,
           processData: false,
           success: (result) => {
-            console.log(result);
             pofileImg.attr("src", result.location);
             pofileImg.attr("key", result.key);
+            deleteBtn.css("display", "block");
           },
           error: (err) => {
             alert(`오류가 발생했습니다:::\r\n${JSON.stringify(err)}`);
@@ -42,6 +42,8 @@ if (adminProductPage) {
           data: { key },
           success: (result) => {
             pofileImg.attr("src", `/images/admin/user.png`);
+            inputImg.val("");
+            deleteBtn.css("display", "none");
           },
           error: (err) => {
             alert(`오류가 발생했습니다:::\r\n${JSON.stringify(err)}`);

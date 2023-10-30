@@ -574,7 +574,7 @@ export const postAdminProduct = async (req, res) => {
       body,
       file,
     } = req;
-
+    console.log(body);
     const adminNameKo = "상품 데이터";
     const adminNameEn = "Product";
     const adminLink = routes[`admin${adminNameEn}`];
