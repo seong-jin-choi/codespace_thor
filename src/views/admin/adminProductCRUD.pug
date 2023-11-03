@@ -38,12 +38,12 @@ block content
                                     a.text-success(href=adminItem.thumbnail target="_blank") [이전 이미지 보기]
                                   .profile__img-wrap
                                     img.profile__img(src=adminItem.thumbnail? adminItem.thumbnail:`${imgPath}/admin/user.png`)
-                                  input#thumbnail-img.form-control(type="file" name="thumbnail")
+                                  input#thumbnail-img.form-control(type="file" name="thumbnail" accept="image/*" )
                                   button#delete__thumnail(tyep="button") 이미지 삭제 버튼
                                 else
                                   .profile__img-wrap
                                     img.profile__img(src=`${imgPath}/admin/user.png`)
-                                  input#thumbnail-img.form-control(type="file" name="thumbnail" required)
+                                  input#thumbnail-img.form-control(type="file" name="thumbnail" accept="image/*" required)
                                   button#delete__thumnail(tyep="button" style="display:none") 이미지 삭제 버튼
                               .col-12.mt-5
                                 h5.fw-semibold 2. 데이터 등록 영역

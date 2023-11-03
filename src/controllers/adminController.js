@@ -574,13 +574,11 @@ export const postAdminProduct = async (req, res) => {
       body,
       file,
     } = req;
-    console.log(body);
     const adminNameKo = "상품 데이터";
     const adminNameEn = "Product";
     const adminLink = routes[`admin${adminNameEn}`];
     body.updatedAt = moment(new Date()).tz("Asia/Seoul");
     let adminItem;
-
     if (crudType === "create") {
       // 등록
       body.thumbnail = file ? file.location : null;
@@ -590,6 +588,7 @@ export const postAdminProduct = async (req, res) => {
       // 수정
       const { itemID } = body;
       adminItem = await Product.findById(itemID);
+
       body.thumbnail = file ? file.location : adminItem.thumbnail;
       await Product.findByIdAndUpdate(itemID, body);
     }
