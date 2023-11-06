@@ -1,0 +1,46 @@
+extends layouts/main
+
+block content
+  .product__page#product__page
+    #sorting
+      .top__btn-items-wrap
+      .top__btn-item.top__btn-item-sort
+        ul.sorting__items
+          each sortItem, index in sortArr
+            li.sorting__item
+              a.sorting__item-link.bg-label-secondary(href=`?sort=${sortItem.code}` class=`${sortItem.code === sortCode ? "bg-label-primary fw-bold" : ""}`)=sortItem.title
+    #products
+      ul.product__items-wrap
+        each item, index in productItems
+          li.product__item-wrap
+            img.item__thumbnail(src=`${item.thumbnail}`)
+            span.item__brand=item.brand
+            span.item__title=item.name
+            if item.discountRate !== 0 
+              span.item__Price.discountActived #{item.price}원
+            else
+              span.item__Price #{item.price}원
+            span.item__discountedPrice #{Math.floor(item.price-(item.price*item.discountRate*0.01))}원
+             span.item__discount (#{item.discountRate}% 할인됨)
+    #pagination
+      if productItems.length !== 0
+        ul.pagination
+            li.page-item.first
+            a.page-link.waves-effect(href=`?page=1&limit=${limit}` aria-label="First")
+                i.ti.ti-chevrons-left.ti-xs
+            li.page-item.prev
+            a.page-link.waves-effect(href=paginate.href(true) aria-label="Previous")
+                i.ti.ti-chevron-left.ti-xs
+            each page in pages
+              if paginate.page === page.number
+                  li.page-item.active(aria-current='page')
+                  a.page-link.waves-effect(href=page.url)=page.number
+              else
+                  li.page-item
+                  a.page-link.waves-effect(href=page.url)=page.number
+            li.page-item.next
+            a.page-link.waves-effect(href=`${paginate.hasNextPages(pageCount) ? paginate.href() : ""}` aria-label="Next")
+                i.ti.ti-chevron-right.ti-xs
+            li.page-item.last
+            a.page-link.waves-effect(href=`?page=${pageCount}&limit=${limit}` aria-label="Last")
+                i.ti.ti-chevrons-right.ti-xs

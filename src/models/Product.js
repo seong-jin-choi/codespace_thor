@@ -10,7 +10,7 @@ const ProductSchema = new Schema(
     price: Number,
     brand: String,
     discountRate: Number,
-    category: { type: String, enum: ["고양이", "개", "원숭이", "사자", "코알라", "기린", "판다", "호랑이", "코끼리", "말"] },
+    category: { type: String, enum: ["가디건", "니트/베스트", "셔츠/남방", "자켓", "점퍼/패딩", "정장/수트", "코트", "맨투맨/후드/티셔츠", "팬츠"] },
   },
   { timestamps: true }
 );

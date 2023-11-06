@@ -448,7 +448,7 @@ export const adminProduct = async (req, res) => {
     const {
       query: { sort, searchCode, searchValue, limit },
     } = req;
-
+    console.log(req.skip);
     // findQuery default 값
     const findQuery = {};
     // sortQuery default 값
@@ -542,7 +542,8 @@ export const getAdminProduct = async (req, res) => {
     const adminNameEn = "Product";
     const adminLink = routes[`admin${adminNameEn}`];
     const updateBool = crudType === "update";
-    const categories = ["고양이", "개", "원숭이", "사자", "코알라", "기린", "판다", "호랑이", "코끼리", "말"];
+    const categories = ["가디건", "니트/베스트", "셔츠/남방", "자켓", "점퍼/패딩", "정장/수트", "코트", "맨투맨/후드/티셔츠", "팬츠"];
+
     const users = await User.find();
     const renderObj = {
       crudType,
@@ -574,6 +575,7 @@ export const postAdminProduct = async (req, res) => {
       body,
       file,
     } = req;
+    console.log(crudType);
     const adminNameKo = "상품 데이터";
     const adminNameEn = "Product";
     const adminLink = routes[`admin${adminNameEn}`];

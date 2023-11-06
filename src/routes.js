@@ -1,5 +1,6 @@
 // Global
 const HOME = "/";
+const PRODUCT = "/product";
 
 // User
 const USER = "/user";
@@ -38,6 +39,7 @@ const API = "/api";
 const routes = {
   // Global
   home: HOME,
+  product: PRODUCT,
 
   // User
   user: USER,
